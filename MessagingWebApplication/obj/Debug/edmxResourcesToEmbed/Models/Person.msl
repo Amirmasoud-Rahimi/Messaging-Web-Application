@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="SanayChatDBModelStoreContainer" CdmEntityContainer="SanayChatDBEntities">
+    <EntitySetMapping Name="People">
+      <EntityTypeMapping TypeName="SanayChatDBModel.Person">
+        <MappingFragment StoreEntitySet="Person">
+          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="DateOfJoining" ColumnName="DateOfJoining" />
+          <ScalarProperty Name="PhtotFileName" ColumnName="PhtotFileName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="GetPersonByUsernameAndPassword" FunctionName="SanayChatDBModel.Store.GetPersonByUsernameAndPassword" />
+  </EntityContainerMapping>
+</Mapping>
