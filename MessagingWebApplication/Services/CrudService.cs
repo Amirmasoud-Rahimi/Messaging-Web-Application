@@ -45,7 +45,7 @@ namespace MessagingWebApplication.Services
         {
             using (var context = new SanayChatDBEntities())
             {
-                Person person = context.People.FirstOrDefault(p => p.PersonId == id);
+                Person person =context.People.FirstOrDefault(p => p.PersonId == id);
                 return person;
             }
         }

@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using MessagingWebApplication.Models;
+using MessagingWebApplication.Filter;
 
 namespace MessagingWebApplication.Controllers
 {
@@ -32,6 +33,7 @@ namespace MessagingWebApplication.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("GetAllPersons")]
         [HttpGet]
         public HttpResponseMessage GetAllPersons()
@@ -46,6 +48,7 @@ namespace MessagingWebApplication.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("Login")]
         [HttpPost]
         public HttpResponseMessage UserLogin(Person person)
@@ -54,14 +57,23 @@ namespace MessagingWebApplication.Controllers
             try
             {
                 var userValidation = crudService.Login(person);
-                statusCode = userValidation == true ? HttpStatusCode.OK : HttpStatusCode.Unauthorized;                                
-            }catch(Exception)
-            {
-                statusCode=HttpStatusCode.BadRequest;
+                if( userValidation )
+                {
+                    String token = JwtManager.GenerateToken(person.UserName);
+                    return Request.CreateResponse(HttpStatusCode.OK,token);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                }
             }
-            return Request.CreateResponse(statusCode);
+            catch(Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest,ex.Message);
+            }
         }
 
+        [JwtAuthentication]
         [Route("GetPerson/{personId}")]
         [HttpGet]
         public HttpResponseMessage Get(int personId)
