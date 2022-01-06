@@ -11,10 +11,16 @@ namespace MessagingWebApplication.Services
     {
         void AddNewPerson(Person person);
 
-        List<string> GetAllPersonsFullName();
+        List<PersonDto> GetAllPersons();
 
-        Boolean Login(Person person);
+        Boolean SignIn(String userName,String password);
 
         Person GetPersonById(int id);
+
+        Person GetPersonByUserName(String userName);
+
+        List<PersonDto> GetAllPersonsExceptId(int personId);
+
+
     }
 }

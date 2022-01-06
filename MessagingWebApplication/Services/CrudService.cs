@@ -1,5 +1,5 @@
 ﻿using MessagingWebApplication.Models;
-using Microsoft.Extensions.DependencyInjection;
+using BCryptTool = BCrypt.Net.BCrypt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,31 +13,45 @@ namespace MessagingWebApplication.Services
         {
             using (var context = new SanayChatDBEntities())
             {
+                string salt = BCryptTool.GenerateSalt();
+                person.Password=BCryptTool.HashPassword(person.Password, salt);
                 context.People.Add(person);
                 context.SaveChanges();
             }
         }
 
-        public List<string> GetAllPersonsFullName()
+        public List<PersonDto> GetAllPersons()
         {
-            List<string> personsFullName = new List<String>();
+            List<PersonDto> personDtoList = new List<PersonDto>();
             using (var context=new SanayChatDBEntities())
             {
                 context.People.ToList().ForEach(p =>
-                {
-                    personsFullName.Add(p.FullName);
+                {    
+                    personDtoList.Add(PersonDto.Mapper(p));
                 });
             }
-            return personsFullName;
+            return personDtoList;
         }
 
-        public Boolean Login(Person person)
+        public List<PersonDto> GetAllPersonsExceptId(int personId)
+        {
+            List<PersonDto> personDtoList = new List<PersonDto>();
+            using (var context = new SanayChatDBEntities())
+            {
+                context.People.Where(p=>p.PersonId!=personId).ToList().ForEach(p =>
+                {
+                    personDtoList.Add(PersonDto.Mapper(p));
+                });
+            }
+            return personDtoList;
+        }
+
+        public Boolean SignIn(String userName, String password)
         {
             using (var context=new SanayChatDBEntities())
             {
-               var user = context.People.FirstOrDefault(p => p.UserName == person.UserName &&
-                      p.Password == person.Password);
-                return user != null;
+               var user = context.People.SingleOrDefault(p => p.UserName == userName);            
+                return user != null && BCryptTool.Verify(password, user.Password);
             }                          
         }
 
@@ -45,8 +59,15 @@ namespace MessagingWebApplication.Services
         {
             using (var context = new SanayChatDBEntities())
             {
-                Person person =context.People.FirstOrDefault(p => p.PersonId == id);
-                return person;
+                return context.People.FirstOrDefault(p => p.PersonId == id);
+            }
+        }
+
+        public Person GetPersonByUserName(String userName)
+        {
+            using (var context = new SanayChatDBEntities())
+            {
+                return context.People.FirstOrDefault(p => p.UserName == userName);
             }
         }
     }

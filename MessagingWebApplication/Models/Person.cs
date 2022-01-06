@@ -16,7 +16,7 @@ namespace MessagingWebApplication.Models
 
         [Required]
         public string FullName { get; set; }
-        public Nullable<System.DateTime> DateOfJoining { get; set; }
+        public DateTime? DateOfJoining { get; set; }
         public string PhtotFileName { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace MessagingWebApplication.Controllers
             crudService = new CrudService();
         }
 
+        [AllowAnonymous]
         [Route("AddPerson")]
         [HttpPost]
        public HttpResponseMessage AddPerson(Person person)
@@ -33,14 +34,14 @@ namespace MessagingWebApplication.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [JwtAuthentication]
         [Route("GetAllPersons")]
         [HttpGet]
         public HttpResponseMessage GetAllPersons()
         {
             try
             {
-                var data=crudService.GetAllPersonsFullName();
+                var data=crudService.GetAllPersons();
                 return Request.CreateResponse(HttpStatusCode.OK, data);
             }catch(Exception ex)
             {
@@ -48,19 +49,36 @@ namespace MessagingWebApplication.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [Route("Login")]
-        [HttpPost]
-        public HttpResponseMessage UserLogin(Person person)
+        [JwtAuthentication]
+        [Route("GetAllPersonsExceptId/{personId}")]
+        [HttpGet]
+        public HttpResponseMessage GetAllPersonsExceptId(int personId)
         {
-            HttpStatusCode statusCode;
             try
             {
-                var userValidation = crudService.Login(person);
+                var data = crudService.GetAllPersonsExceptId(personId);
+                return Request.CreateResponse(HttpStatusCode.OK, data);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [Route("SignIn")]
+        [HttpPost]
+        public HttpResponseMessage SignIn(Person person)
+        {
+            try
+            {
+                var userValidation = crudService.SignIn(person.UserName,person.Password);
                 if( userValidation )
                 {
                     String token = JwtManager.GenerateToken(person.UserName);
-                    return Request.CreateResponse(HttpStatusCode.OK,token);
+                    Person p = crudService.GetPersonByUserName(person.UserName);
+                    PersonDto dto = PersonDto.SignInMapper(p, token);
+                    return Request.CreateResponse(HttpStatusCode.OK,dto);
                 }
                 else
                 {
@@ -81,11 +99,18 @@ namespace MessagingWebApplication.Controllers
             try
             {
                 Person person = crudService.GetPersonById(personId);
-                return Request.CreateResponse(HttpStatusCode.OK, person);
+                if (person != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, person);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound);
+                }              
             }
             catch (Exception)
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
         }
     }
