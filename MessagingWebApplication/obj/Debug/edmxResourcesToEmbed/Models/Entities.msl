@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="MessagingDBModelStoreContainer" CdmEntityContainer="MessagingDBEntities">
+    <EntitySetMapping Name="Messages">
+      <EntityTypeMapping TypeName="MessagingDBModel.Message">
+        <MappingFragment StoreEntitySet="Messages">
+          <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+          <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+          <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
+          <ScalarProperty Name="MessageContent" ColumnName="MessageContent" />
+          <ScalarProperty Name="SendingDate" ColumnName="SendingDate" />
+          <ScalarProperty Name="ReceivingDate" ColumnName="ReceivingDate" />
+          <ScalarProperty Name="Attachment" ColumnName="Attachment" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="MessagingDBModel.User">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="DateOfJoining" ColumnName="DateOfJoining" />
+          <ScalarProperty Name="PhtotFileName" ColumnName="PhtotFileName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="MessagingDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Messages">
+    <Key>
+      <PropertyRef Name="MessageId" />
+    </Key>
+    <Property Name="MessageId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SenderId" Type="int" Nullable="false" />
+    <Property Name="ReceiverId" Type="int" Nullable="false" />
+    <Property Name="MessageContent" Type="nvarchar" MaxLength="500" />
+    <Property Name="SendingDate" Type="datetime" Nullable="false" />
+    <Property Name="ReceivingDate" Type="datetime" />
+    <Property Name="Attachment" Type="varchar" MaxLength="240" />
+  </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="varchar" MaxLength="240" Nullable="false" />
+    <Property Name="Password" Type="varchar" MaxLength="240" Nullable="false" />
+    <Property Name="FullName" Type="nvarchar" MaxLength="240" Nullable="false" />
+    <Property Name="DateOfJoining" Type="date" />
+    <Property Name="PhtotFileName" Type="varchar" MaxLength="240" />
+  </EntityType>
+  <Association Name="FK__Messages__Receiv__2F10007B">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Messages">
+        <PropertyRef Name="ReceiverId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Messages__Sender__2E1BDC42">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Messages">
+        <PropertyRef Name="SenderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="MessagingDBModelStoreContainer">
+    <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK__Messages__Receiv__2F10007B" Association="Self.FK__Messages__Receiv__2F10007B">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Messages" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Messages__Sender__2E1BDC42" Association="Self.FK__Messages__Sender__2E1BDC42">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Messages" EntitySet="Messages" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

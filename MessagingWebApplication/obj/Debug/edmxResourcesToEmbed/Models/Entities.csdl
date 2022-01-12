@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="MessagingDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Message">
+    <Key>
+      <PropertyRef Name="MessageId" />
+    </Key>
+    <Property Name="MessageId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SenderId" Type="Int32" Nullable="false" />
+    <Property Name="ReceiverId" Type="Int32" Nullable="false" />
+    <Property Name="MessageContent" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="SendingDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="ReceivingDate" Type="DateTime" Precision="3" />
+    <Property Name="Attachment" Type="String" MaxLength="240" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="User" Relationship="Self.FK__Messages__Receiv__2F10007B" FromRole="Messages" ToRole="Users" />
+    <NavigationProperty Name="User1" Relationship="Self.FK__Messages__Sender__2E1BDC42" FromRole="Messages" ToRole="Users" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserName" Type="String" MaxLength="240" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Password" Type="String" MaxLength="240" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="FullName" Type="String" MaxLength="240" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="DateOfJoining" Type="DateTime" Precision="0" />
+    <Property Name="PhtotFileName" Type="String" MaxLength="240" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Messages" Relationship="Self.FK__Messages__Receiv__2F10007B" FromRole="Users" ToRole="Messages" />
+    <NavigationProperty Name="Messages1" Relationship="Self.FK__Messages__Sender__2E1BDC42" FromRole="Users" ToRole="Messages" />
+  </EntityType>
+  <Association Name="FK__Messages__Receiv__2F10007B">
+    <End Role="Users" Type="Self.User" Multiplicity="1" />
+    <End Role="Messages" Type="Self.Message" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Messages">
+        <PropertyRef Name="ReceiverId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Messages__Sender__2E1BDC42">
+    <End Role="Users" Type="Self.User" Multiplicity="1" />
+    <End Role="Messages" Type="Self.Message" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Messages">
+        <PropertyRef Name="SenderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="MessagingDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Messages" EntityType="Self.Message" />
+    <EntitySet Name="Users" EntityType="Self.User" />
+    <AssociationSet Name="FK__Messages__Receiv__2F10007B" Association="Self.FK__Messages__Receiv__2F10007B">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Messages" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Messages__Sender__2E1BDC42" Association="Self.FK__Messages__Sender__2E1BDC42">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Messages" EntitySet="Messages" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

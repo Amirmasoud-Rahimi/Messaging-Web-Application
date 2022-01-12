@@ -3,72 +3,89 @@ using BCryptTool = BCrypt.Net.BCrypt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace MessagingWebApplication.Services
 {
     public class CrudService : ICrudService
     {
-        public void AddNewPerson(Person person)
+        public void AddUser(User user)
         {
-            using (var context = new SanayChatDBEntities())
+            using (var context = new MessagingDBUsers())
             {
                 string salt = BCryptTool.GenerateSalt();
-                person.Password=BCryptTool.HashPassword(person.Password, salt);
-                context.People.Add(person);
+                user.Password=BCryptTool.HashPassword(user.Password, salt);
+                user.DateOfJoining = new DateTime();
+                context.Users.Add(user);
                 context.SaveChanges();
             }
         }
 
-        public List<PersonDto> GetAllPersons()
+        public List<UserDto> GetAllUsers()
         {
-            List<PersonDto> personDtoList = new List<PersonDto>();
-            using (var context=new SanayChatDBEntities())
+            List<UserDto> userDtoList = new List<UserDto>();
+            using (var context=new MessagingDBUsers())
             {
-                context.People.ToList().ForEach(p =>
+                context.Users.ToList().ForEach(user =>
                 {    
-                    personDtoList.Add(PersonDto.Mapper(p));
+                    userDtoList.Add(UserDto.Mapper(user));
                 });
             }
-            return personDtoList;
+            return userDtoList;
         }
 
-        public List<PersonDto> GetAllPersonsExceptId(int personId)
+        public Boolean SignIn(string userName, string password)
         {
-            List<PersonDto> personDtoList = new List<PersonDto>();
-            using (var context = new SanayChatDBEntities())
+            using (var context=new MessagingDBUsers())
             {
-                context.People.Where(p=>p.PersonId!=personId).ToList().ForEach(p =>
-                {
-                    personDtoList.Add(PersonDto.Mapper(p));
-                });
-            }
-            return personDtoList;
-        }
-
-        public Boolean SignIn(String userName, String password)
-        {
-            using (var context=new SanayChatDBEntities())
-            {
-               var user = context.People.SingleOrDefault(p => p.UserName == userName);            
+               var user = context.Users.SingleOrDefault(u => u.UserName == userName);            
                 return user != null && BCryptTool.Verify(password, user.Password);
             }                          
         }
 
-        public Person GetPersonById(int id)
+        public User GetUserById(int id)
         {
-            using (var context = new SanayChatDBEntities())
+            using (var context = new MessagingDBUsers())
             {
-                return context.People.FirstOrDefault(p => p.PersonId == id);
+                return context.Users.FirstOrDefault(user => user.UserId == id);
             }
         }
 
-        public Person GetPersonByUserName(String userName)
+        public User GetUserByUserName(string userName)
         {
-            using (var context = new SanayChatDBEntities())
+            using (var context = new MessagingDBUsers())
             {
-                return context.People.FirstOrDefault(p => p.UserName == userName);
+                return context.Users.FirstOrDefault(user => user.UserName == userName);
             }
+        }
+
+        public void AddMessage(Message message)
+        {
+           using(var context=new MessagingDBMessages())
+            {
+                message.SendingDate = DateTime.Now;
+                context.Messages.Add(message);
+                context.SaveChanges();
+            }
+        }
+
+        public List<MessageDto> GetUserMessages(int userId,int contactId)
+        {
+            List<MessageDto> messageDtoList = new List<MessageDto>();
+            List<Message> messages;
+            using (var context = new MessagingDBMessages())
+            {
+                    messages = context.Messages.Where(
+                    message => (message.SenderId == userId
+                    && message.ReceiverId==contactId)||
+                    (message.SenderId == contactId
+                    && message.ReceiverId == userId)
+                    ).ToList();
+            }
+            messages.ForEach(m =>
+            {
+                messageDtoList.Add(MessageDto.Mapper(m));
+            });
+               return messageDtoList;
         }
     }
 }
